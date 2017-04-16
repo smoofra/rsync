@@ -33,6 +33,11 @@
 #include <sys/syscall.h>
 #endif
 
+#ifdef HAVE_CLONEFILE
+#include <sys/attr.h>
+#include <sys/clonefile.h>
+#endif
+
 extern int dry_run;
 extern int am_root;
 extern int am_sender;
@@ -203,6 +208,24 @@ int do_open(const char *pathname, int flags, mode_t mode)
 	}
 
 	return open(pathname, flags | O_BINARY, mode);
+}
+
+int do_clonefile(UNUSED(const char *src), UNUSED(const char *dest), UNUSED(int flags))
+{
+	RETURN_ERROR_IF(dry_run, 0);
+	RETURN_ERROR_IF_RO_OR_LO;
+	int r = -1;
+#if HAVE_CLONEFILE
+	r = clonefile(src, dest, flags);
+	if (DEBUG_GTE(RECV, 1)) {
+		if (r == 0) {
+			rprintf(FINFO, "cloned %s -> %s\n", src, dest);
+		} else {
+			rprintf(FERROR, "clone failed %s -> %s: %s\n", src, dest, strerror(errno));
+		}
+	}
+#endif
+	return r;
 }
 
 #ifdef HAVE_CHMOD

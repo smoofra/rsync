@@ -827,6 +827,11 @@ static int copy_altdest_file(const char *src, const char *dest, struct file_stru
 	int save_preserve_xattrs = preserve_xattrs;
 	int ok, fd_w;
 
+	if (0 == do_clonefile(src,dest,0)) {
+		copy_to = dest;
+		goto out;
+	}
+
 	if (inplace) {
 		/* Let copy_file open the destination in place. */
 		fd_w = -1;
@@ -848,6 +853,8 @@ static int copy_altdest_file(const char *src, const char *dest, struct file_stru
 		cleanup_disable();
 		return -1;
 	}
+
+out:
 	partialptr = partial_dir ? partial_dir_fname(dest) : NULL;
 	preserve_xattrs = 0; /* xattrs were copied with file */
 	ok = finish_transfer(dest, copy_to, src, partialptr, file, 1, 0);

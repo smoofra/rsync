@@ -605,6 +605,12 @@ if test x"$ac_cv_func_iconv_open" != x"yes"; then
     AC_CHECK_FUNC(libiconv_open, [ac_cv_func_iconv_open=yes; AC_DEFINE(HAVE_ICONV_OPEN, 1)])
 fi
 
+dnl apfs clonefile()
+AH_TEMPLATE([HAVE_CLONEFILE], [have apfs's clonefile()])
+if test x"$ac_cv_func_clonefile" != x"yes"; then
+    AC_CHECK_FUNC(clonefile, [ac_cv_func_clonefile=yes; AC_DEFINE(HAVE_CLONEFILE, 1)])
+fi
+
 dnl Preallocation stuff (also fallocate, posix_fallocate function tests above):
 
 AC_CACHE_CHECK([for useable fallocate],rsync_cv_have_fallocate,[
